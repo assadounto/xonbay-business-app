@@ -1,0 +1,34 @@
+import React, { useState } from 'react';
+import { Alert, Pressable, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { BrandHeader, Card, Field, FormScreen, Heading, palette, PrimaryButton } from '@/components/ui';
+
+export default function Login() {
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const submit = async () => {
+    if (!email.trim() || !password) return;
+    setLoading(true);
+    try { await signIn(email, password); router.replace('/workspace'); }
+    catch (error) { Alert.alert('Sign in failed', error instanceof Error ? error.message : 'Please try again.'); }
+    finally { setLoading(false); }
+  };
+  return (
+    <FormScreen centered>
+        <BrandHeader />
+        <Heading eyebrow="MERCHANT ACCESS" title="Welcome back" subtitle="Sign in to manage your shops, orders and inventory." />
+        <Card>
+          <Field label="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" />
+          <Field label="Password" value={password} onChangeText={setPassword} secureTextEntry placeholder="Your password" />
+          <PrimaryButton title="Sign in" loading={loading} disabled={!email.trim() || !password} onPress={() => void submit()} />
+        </Card>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 28 }}>
+          <Text style={{ color: palette.muted }}>New to Xonbay? </Text>
+          <Pressable onPress={() => router.push('/signup')}><Text style={{ color: palette.primary, fontWeight: '700' }}>Create account</Text></Pressable>
+        </View>
+    </FormScreen>
+  );
+}
