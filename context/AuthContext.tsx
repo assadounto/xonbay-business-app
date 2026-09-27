@@ -24,14 +24,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoaded(true));
   }, []);
 
-  const saveSession = async (data: { token: string; user: User }) => {
+  const saveSession = async (data: { token: string; user: User; refresh_token?: string }) => {
     if (!data.token || !data.user) throw new Error('The server did not return a session.');
-    await sessionStorage.save(data.token, data.user);
+    await sessionStorage.save(data.token, data.user, data.refresh_token);
     setUser(data.user);
   };
 
   const signIn = async (email: string, password: string) => {
-    const data = await api<{ token: string; user: User }>('/users/login', {
+    const data = await api<{ token: string; user: User; refresh_token?: string }>('/users/login', {
       method: 'POST',
       body: JSON.stringify({ user: { email: email.trim(), password } }),
     }, false);
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     form.append('user[password]', values.password);
     form.append('user[platform]', Platform.OS);
     form.append('user[app]', 'xonbay');
-    const data = await api<{ token: string; user: User }>('/auth/register', {
+    const data = await api<{ token: string; user: User; refresh_token?: string }>('/auth/register', {
       method: 'POST', body: form,
     }, false);
     await saveSession(data);

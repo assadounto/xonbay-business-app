@@ -3,6 +3,7 @@ import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { api, money } from '@/lib/api';
+import { cachedRequest } from '@/lib/offline';
 import type { Dashboard } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { useShops } from '@/context/ShopContext';
@@ -16,12 +17,15 @@ export default function DashboardScreen() {
   const [error, setError] = useState('');
 
   const loadReport = useCallback(async () => {
-    if (!currentShop) { setReport(null); return; }
+    if (!currentShop || !user) { setReport(null); return; }
     setLoading(true); setError('');
-    try { setReport(await api<Dashboard>('/user_shops/' + currentShop.id + '/dashboard')); }
+    try {
+      const { value } = await cachedRequest(user.id, currentShop.id, 'dashboard', () => api<Dashboard>('/user_shops/' + currentShop.id + '/dashboard'));
+      setReport(value);
+    }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not load dashboard'); }
     finally { setLoading(false); }
-  }, [currentShop?.id]);
+  }, [currentShop?.id, user?.id]);
 
   useFocusEffect(useCallback(() => { void refresh(); }, [refresh]));
   useFocusEffect(useCallback(() => { void loadReport(); }, [loadReport]));
@@ -52,6 +56,8 @@ export default function DashboardScreen() {
         <Card>
           <QuickAction title="Review orders" icon="receipt-outline" onPress={() => router.push('/(tabs)/orders')} />
           <QuickAction title="Manage products" icon="cube-outline" onPress={() => router.push('/(tabs)/products')} />
+          <QuickAction title="Manage events" icon="calendar-outline" onPress={() => router.push('/events')} />
+          <QuickAction title="Record a sale" icon="cash-outline" onPress={() => router.push('/(tabs)/sell')} />
           <QuickAction title="Switch shop" icon="swap-horizontal-outline" onPress={() => router.push('/(tabs)/settings')} />
         </Card>
         <Heading title="Low stock" />

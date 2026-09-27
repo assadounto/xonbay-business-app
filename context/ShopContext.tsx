@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '@/lib/api';
+import { cachedRequest } from '@/lib/offline';
 import type { Shop } from '@/lib/types';
 import { useAuth } from './AuthContext';
 
@@ -23,7 +24,8 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError('');
     try {
-      const data = await api<{ owned?: Shop[]; member?: Shop[] }>('/user_shops?role=all');
+      const { value: data } = await cachedRequest(user.id, 0, 'shops', () =>
+        api<{ owned?: Shop[]; member?: Shop[] }>('/user_shops?role=all'));
       const available = [...(data.owned || []), ...(data.member || [])];
       const saved = await SecureStore.getItemAsync('business_shop_' + user.id);
       const active = available.find((shop) => String(shop.id) === saved) || available[0] || null;

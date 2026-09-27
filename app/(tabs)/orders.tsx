@@ -2,32 +2,40 @@ import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { api, money } from '@/lib/api';
+import { cachedRequest } from '@/lib/offline';
+import { useAuth } from '@/context/AuthContext';
 import type { Order } from '@/lib/types';
 import { useShops } from '@/context/ShopContext';
 import { Card, Heading, Page, palette, StateMessage } from '@/components/ui';
 
 export default function OrdersScreen() {
   const { currentShop, loading: shopsLoading } = useShops();
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [cached, setCached] = useState(false);
   const load = useCallback(async (nextPage = 1) => {
-    if (!currentShop) { setOrders([]); return; }
+    if (!currentShop || !user) { setOrders([]); return; }
+    if (nextPage === 1) setOrders([]);
     setLoading(true); setError('');
     try {
-      const result = await api<{ data?: Order[]; meta?: { total?: number } }>('/shops/' + currentShop.id + '/orders?page=' + nextPage + '&per_page=20');
-      setOrders((previous) => nextPage === 1 ? result.data || [] : [...previous, ...(result.data || [])]);
-      setTotal(result.meta?.total || 0);
+      const result = await cachedRequest(user.id, currentShop.id, 'orders:' + nextPage, () =>
+        api<{ data?: Order[]; meta?: { total?: number } }>('/shops/' + currentShop.id + '/orders?page=' + nextPage + '&per_page=20'));
+      setOrders((previous) => nextPage === 1 ? result.value.data || [] : [...previous, ...(result.value.data || [])]);
+      setTotal(result.value.meta?.total || 0);
+      setCached(result.offline);
       setPage(nextPage);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not load orders'); }
     finally { setLoading(false); }
-  }, [currentShop?.id]);
+  }, [currentShop?.id, user?.id]);
   useFocusEffect(useCallback(() => { void load(1); }, [load]));
 
   return <Page>
     <Heading eyebrow="ORDERS" title="Your orders" subtitle={currentShop ? currentShop.name + ' · ' + total + ' total' : 'Choose a shop to see its orders.'} />
+    {cached && <Text style={{ color: palette.muted, marginBottom: 12 }}>Showing previously saved orders. New orders need a connection.</Text>}
     {shopsLoading && <ActivityIndicator />}
     {!shopsLoading && !currentShop && <StateMessage text="Create or select a shop from Home or Settings to see orders." />}
     {error && <StateMessage text={error} onRetry={() => void load(page)} />}

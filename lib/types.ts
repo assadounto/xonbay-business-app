@@ -16,5 +16,9 @@ export type Order = {
 export type Product = {
   id: number; name: string; price?: number | string; quantity?: number;
   active?: boolean; image_url?: string; images?: Array<string | { url?: string }>;
-  kind?: string; sku?: string;
+  kind?: string; sku?: string; variations?: unknown[];
+};
+export type Event = {
+  id: number; title: string; status?: string; start_at?: string; end_at?: string;
+  venue_name?: string; venue_city?: string; description?: string;
 };

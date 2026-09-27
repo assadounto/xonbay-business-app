@@ -1,9 +1,17 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { router } from 'expo-router';
+import { useSync } from '@/context/SyncContext';
 
 export const palette = { background: '#F6F8FC', ink: '#111827', muted: '#64748B', blue: '#175CD3', border: '#E2E8F0', white: '#FFFFFF' };
 export function Page({ children }: { children: React.ReactNode }) {
-  return <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>{children}</ScrollView>;
+  const { online, pending, attention } = useSync();
+  return <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+    {(!online || pending > 0 || attention > 0) && <Pressable accessibilityRole="button" onPress={() => router.push('/sync-queue')} style={{ padding: 12, borderRadius: 10, backgroundColor: attention ? '#FEF3C7' : '#DBEAFE', marginBottom: 18 }}>
+      <Text style={{ color: palette.ink, fontWeight: '700' }}>{online ? 'Online' : 'Offline'} · {pending} waiting to sync{attention ? ' · ' + attention + ' need review' : ''}</Text>
+    </Pressable>}
+    {children}
+  </ScrollView>;
 }
 export function Heading({ eyebrow, title, subtitle }: { eyebrow?: string; title: string; subtitle?: string }) {
   return <View style={styles.heading}>{eyebrow && <Text style={styles.eyebrow}>{eyebrow}</Text>}<Text style={styles.title}>{title}</Text>{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}</View>;
