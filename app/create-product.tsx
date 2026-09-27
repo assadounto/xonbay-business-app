@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { Alert, Text } from 'react-native';
+import { Alert } from 'react-native';
 import { useShops } from '@/context/ShopContext';
 import { useSync } from '@/context/SyncContext';
-import { Field, Heading, Page, palette, PrimaryButton } from '@/components/ui';
+import { BackButton, Card, Field, Heading, Page, PrimaryButton } from '@/components/ui';
 
 export default function CreateProduct() {
   const { currentShop } = useShops();
@@ -30,12 +30,14 @@ export default function CreateProduct() {
     finally { setSaving(false); }
   };
   return <Page>
-    <Text onPress={() => router.back()} style={{ color: palette.blue, marginBottom: 20 }}>Back</Text>
+    <BackButton />
     <Heading eyebrow="PRODUCT" title="Add a product" subtitle="Saved on your phone first. It syncs to your shop as an inactive listing; add images and activate it after review." />
+    <Card>
     <Field label="Name" value={name} onChangeText={setName} />
     <Field label="Description" value={description} onChangeText={setDescription} />
     <Field label="Price (GHS)" value={price} onChangeText={setPrice} keyboardType="default" placeholder="25.00" />
     <Field label="Starting stock" value={quantity} onChangeText={setQuantity} keyboardType="number-pad" />
     <PrimaryButton title="Save product" loading={saving} disabled={!currentShop} onPress={() => void save()} />
+    </Card>
   </Page>;
 }

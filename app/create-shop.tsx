@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, Text } from 'react-native';
+import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useShops } from '@/context/ShopContext';
-import { Field, FormScreen, Heading, PrimaryButton, styles } from '@/components/ui';
+import { BackButton, Card, Field, FormScreen, Heading, PrimaryButton } from '@/components/ui';
 
 export default function CreateShop() {
   const { refresh } = useShops();
@@ -32,14 +32,16 @@ export default function CreateShop() {
   };
   return (
     <FormScreen>
-        <Pressable onPress={() => router.back()}><Text style={[styles.link, { marginBottom: 25 }]}>Back</Text></Pressable>
+        <BackButton />
         <Heading eyebrow="NEW SHOP" title="Set up your shop" subtitle="Start with the basics. You can add products and details after creating it." />
+        <Card>
         <Field label="Shop name" value={name} onChangeText={setName} placeholder="Your business name" />
         <Field label="Shop handle" value={handle} onChangeText={setHandle} autoCapitalize="none" placeholder="myshop" />
         <Field label="City" value={city} onChangeText={setCity} />
         <Field label="Region" value={region} onChangeText={setRegion} />
         <Field label="Category" value={category} onChangeText={setCategory} placeholder="What do you sell?" />
         <PrimaryButton title="Create shop" loading={saving} onPress={() => void create()} />
+        </Card>
     </FormScreen>
   );
 }

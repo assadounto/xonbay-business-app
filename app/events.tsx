@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { router, useFocusEffect } from 'expo-router';
-import { ActivityIndicator, Text } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
 import { useShops } from '@/context/ShopContext';
 import { api } from '@/lib/api';
 import { cachedCollection } from '@/lib/offline';
 import type { Event } from '@/lib/types';
-import { Card, Heading, Page, palette, PrimaryButton, StateMessage } from '@/components/ui';
+import { BackButton, Card, Heading, Page, palette, PrimaryButton, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
 export default function EventsScreen() {
   const { user } = useAuth();
@@ -28,17 +29,18 @@ export default function EventsScreen() {
   }, [currentShop?.id, user?.id]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
   return <Page>
-    <Text onPress={() => router.back()} style={{ color: palette.blue, marginBottom: 20 }}>Back</Text>
-    <Heading eyebrow="EVENTS" title="Your events" subtitle={currentShop?.name || 'Choose a shop first.'} />
+    <BackButton />
+    <Heading eyebrow="YOUR WORKSPACE / EVENTS" title="Events" subtitle={currentShop ? 'Plan and manage events for ' + currentShop.name : 'Choose a shop first.'} />
     {currentShop && <PrimaryButton title="Create event" onPress={() => router.push('/create-event')} />}
-    {cached && <Text style={{ color: palette.muted, marginVertical: 12 }}>Showing saved events.</Text>}
+    {cached && <View style={{ marginTop: 12 }}><StatusPill label="Saved events · reconnect for updates" tone="warning" /></View>}
+    <SectionTitle title="Your events" caption={events.length + ' events'} action="Refresh" onPress={() => void load()} />
     {loading && <ActivityIndicator style={{ marginTop: 18 }} />}
     {error && <StateMessage text={error} onRetry={() => void load()} />}
     {!loading && !error && !events.length && <StateMessage text="No events found for this shop." />}
     {events.map((event) => <Card key={event.id}>
-      <Text style={{ color: palette.ink, fontWeight: '800', fontSize: 16 }}>{event.title}</Text>
-      <Text style={{ color: palette.muted, marginTop: 8 }}>{event.status || 'Draft'}{event.start_at ? ' · ' + new Date(event.start_at).toLocaleString() : ''}</Text>
-      {!!event.venue_name && <Text style={{ color: palette.muted, marginTop: 6 }}>{event.venue_name}{event.venue_city ? ', ' + event.venue_city : ''}</Text>}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}><View style={{ flex: 1 }}><Text style={{ color: palette.ink, fontWeight: '900', fontSize: 16 }}>{event.title}</Text></View><StatusPill label={event.status || 'Draft'} tone={event.status === 'published' ? 'good' : 'warning'} /></View>
+      {event.start_at && <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 13 }}><Ionicons name="time-outline" color={palette.muted} size={17} /><Text style={{ color: palette.muted }}>{new Date(event.start_at).toLocaleString()}</Text></View>}
+      {!!event.venue_name && <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 8 }}><Ionicons name="location-outline" color={palette.muted} size={17} /><Text style={{ color: palette.muted, flex: 1 }}>{event.venue_name}{event.venue_city ? ', ' + event.venue_city : ''}</Text></View>}
     </Card>)}
   </Page>;
 }

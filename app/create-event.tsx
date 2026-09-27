@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { router } from 'expo-router';
-import { Alert, Text } from 'react-native';
+import { Alert } from 'react-native';
 import { useShops } from '@/context/ShopContext';
 import { useSync } from '@/context/SyncContext';
-import { Field, Heading, Page, palette, PrimaryButton } from '@/components/ui';
+import { BackButton, Card, Field, Heading, Page, PrimaryButton } from '@/components/ui';
 
 function parseLocal(value: string) {
   if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(value)) return null;
@@ -38,8 +38,9 @@ export default function CreateEvent() {
     finally { setSaving(false); }
   };
   return <Page>
-    <Text onPress={() => router.back()} style={{ color: palette.blue, marginBottom: 20 }}>Back</Text>
+    <BackButton />
     <Heading eyebrow="EVENT" title="Create an event" subtitle="Save an offline draft. Review tickets and media before publishing online." />
+    <Card>
     <Field label="Event title" value={title} onChangeText={setTitle} />
     <Field label="Description" value={description} onChangeText={setDescription} />
     <Field label="Venue" value={venue} onChangeText={setVenue} />
@@ -47,5 +48,6 @@ export default function CreateEvent() {
     <Field label="Starts (YYYY-MM-DD HH:mm)" value={start} onChangeText={setStart} placeholder="2026-10-01 18:00" />
     <Field label="Ends (YYYY-MM-DD HH:mm)" value={end} onChangeText={setEnd} placeholder="2026-10-01 22:00" />
     <PrimaryButton title="Save event draft" loading={saving} disabled={!currentShop} onPress={() => void save()} />
+    </Card>
   </Page>;
 }

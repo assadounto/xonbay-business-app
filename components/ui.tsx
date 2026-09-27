@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { router, useSegments } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSync } from "@/context/SyncContext";
 
@@ -21,13 +22,21 @@ export const palette = {
   blue: "#5865F2",
   border: "#E4E7F0",
   white: "#FFFFFF",
+  navy: "#20243D",
+  indigoSoft: "#EEF0FF",
+  green: "#137C64",
+  greenSoft: "#E5F6EF",
+  amber: "#A9651F",
+  amberSoft: "#FFF2DE",
 };
-export function Page({ children }: { children: React.ReactNode }) {
+export function Page({ children, footer }: { children: React.ReactNode; footer?: React.ReactNode }) {
   const { online, pending, attention } = useSync();
   const insets = useSafeAreaInsets();
   const segments = useSegments();
   const hasTabBar = segments[0] === "(tabs)";
+  const Container = footer ? KeyboardAvoidingView : View;
   return (
+    <Container style={styles.page} behavior={footer && Platform.OS === "ios" ? "padding" : undefined}>
     <ScrollView
       style={styles.page}
       contentContainerStyle={[
@@ -38,27 +47,27 @@ export function Page({ children }: { children: React.ReactNode }) {
         },
       ]}
       keyboardShouldPersistTaps="handled"
-      automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+      automaticallyAdjustKeyboardInsets={Platform.OS === "ios" && !footer}
     >
       {(!online || pending > 0 || attention > 0) && (
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="View sync status"
           onPress={() => router.push("/sync-queue")}
-          style={{
-            padding: 12,
-            borderRadius: 10,
-            backgroundColor: attention ? "#FEF3C7" : "#DBEAFE",
-            marginBottom: 18,
-          }}
+          style={[styles.syncBanner, { backgroundColor: attention ? palette.amberSoft : palette.indigoSoft }]}
         >
-          <Text style={{ color: palette.ink, fontWeight: "700" }}>
-            {online ? "Online" : "Offline"} · {pending} waiting to sync
-            {attention ? " · " + attention + " need review" : ""}
-          </Text>
+          <Ionicons name={attention ? "alert-circle-outline" : online ? "cloud-upload-outline" : "cloud-offline-outline"} size={20} color={attention ? palette.amber : palette.blue} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.syncTitle}>{attention ? "Needs your attention" : online ? "Syncing your changes" : "Working offline"}</Text>
+            <Text style={styles.syncSubtitle}>{pending} waiting to sync{attention ? " · " + attention + " to review" : ""}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={17} color={palette.muted} />
         </Pressable>
       )}
       {children}
     </ScrollView>
+    {footer && <View style={styles.stickyFooter}>{footer}</View>}
+    </Container>
   );
 }
 export function FormScreen({
@@ -101,6 +110,25 @@ export function Heading({
 }
 export function Card({ children }: { children: React.ReactNode }) {
   return <View style={styles.card}>{children}</View>;
+}
+export function SectionTitle({ title, caption, action, onPress }: { title: string; caption?: string; action?: string; onPress?: () => void }) {
+  return <View style={styles.sectionRow}>
+    <View style={{ flex: 1 }}><Text style={styles.sectionTitle}>{title}</Text>{caption && <Text style={styles.sectionCaption}>{caption}</Text>}</View>
+    {action && onPress && <Pressable accessibilityRole="button" onPress={onPress} style={styles.sectionAction}><Text style={{ color: palette.blue, fontWeight: "800" }}>{action}</Text><Ionicons name="chevron-forward" size={15} color={palette.blue} /></Pressable>}
+  </View>;
+}
+export function BackButton() {
+  return <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={() => router.back()} style={styles.backButton}>
+    <Ionicons name="arrow-back" size={19} color={palette.ink} /><Text style={{ color: palette.ink, fontWeight: "800" }}>Back</Text>
+  </Pressable>;
+}
+export function BrandHeader() {
+  return <View style={styles.brandRow}><View style={styles.brandMark}><Text style={styles.brandX}>X</Text></View><View><Text style={styles.brandName}>Xonbay</Text><Text style={styles.brandCaption}>BUSINESS WORKSPACE</Text></View></View>;
+}
+export function StatusPill({ label, tone = "neutral" }: { label: string; tone?: "neutral" | "good" | "warning" }) {
+  const color = tone === "good" ? palette.green : tone === "warning" ? palette.amber : palette.blue;
+  const backgroundColor = tone === "good" ? palette.greenSoft : tone === "warning" ? palette.amberSoft : palette.indigoSoft;
+  return <View style={[styles.pill, { backgroundColor }]}><Text style={{ color, fontSize: 11, fontWeight: "800" }} numberOfLines={1}>{label}</Text></View>;
 }
 export function PrimaryButton({
   title,
@@ -183,9 +211,13 @@ export function StateMessage({
 export const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: palette.background },
   pageContent: { paddingHorizontal: 20 },
+  stickyFooter: { backgroundColor: palette.white, borderTopWidth: 1, borderTopColor: palette.border, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
   formContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 32 },
   formCentered: { justifyContent: "center" },
   heading: { marginBottom: 20 },
+  syncBanner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 18, marginBottom: 18 },
+  syncTitle: { color: palette.ink, fontWeight: "800", fontSize: 13 },
+  syncSubtitle: { color: palette.muted, fontSize: 12, marginTop: 2 },
   eyebrow: {
     color: palette.blue,
     fontSize: 11,
@@ -193,7 +225,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: 8,
   },
-  title: { color: palette.ink, fontSize: 27, fontWeight: "800" },
+  title: { color: palette.ink, fontSize: 29, fontWeight: "900", letterSpacing: -0.6 },
   subtitle: {
     color: palette.muted,
     fontSize: 14,
@@ -207,7 +239,23 @@ export const styles = StyleSheet.create({
     borderColor: palette.border,
     padding: 18,
     marginBottom: 14,
+    shadowColor: "#22284D",
+    shadowOpacity: 0.04,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 2,
   },
+  sectionRow: { flexDirection: "row", alignItems: "center", marginTop: 14, marginBottom: 12, gap: 10 },
+  sectionTitle: { color: palette.ink, fontWeight: "900", fontSize: 19, letterSpacing: -0.3 },
+  sectionCaption: { color: palette.muted, fontSize: 12, marginTop: 3 },
+  sectionAction: { flexDirection: "row", alignItems: "center", paddingVertical: 8 },
+  backButton: { alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 9, marginBottom: 18 },
+  brandRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 34 },
+  brandMark: { width: 44, height: 44, borderRadius: 14, backgroundColor: palette.blue, alignItems: "center", justifyContent: "center" },
+  brandX: { color: "#fff", fontWeight: "900", fontSize: 25 },
+  brandName: { color: palette.ink, fontWeight: "900", fontSize: 19, lineHeight: 22 },
+  brandCaption: { color: palette.muted, fontWeight: "800", fontSize: 10, letterSpacing: 1 },
+  pill: { alignSelf: "flex-start", borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 },
   button: {
     backgroundColor: palette.blue,
     borderRadius: 14,
