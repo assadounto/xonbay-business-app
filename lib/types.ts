@@ -1,5 +1,11 @@
 export type User = { id: number; name?: string; email?: string };
-export type Shop = { id: number; name: string; logo_url?: string; role?: string };
+export type Shop = {
+  id: number; name: string; logo_url?: string; image_url?: string; role?: string;
+  handle?: string; city?: string; region?: string; category?: string | { name?: string };
+  seller_access?: 'owner' | 'member'; access_level?: string; verified?: boolean; is_verified?: boolean;
+  products_count?: number; stats?: { products?: number };
+  wallet_preview?: { available_pesewas?: number; currency?: string };
+};
 export type Dashboard = {
   kpis?: { revenue?: { today_ghs?: number; week_ghs?: number; month_ghs?: number; currency?: string } };
   orders?: { new?: number; processing?: number; shipped?: number; cancelled?: number };

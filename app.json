@@ -27,6 +27,14 @@
       "expo-secure-store",
       "expo-sqlite",
       [
+        "expo-location",
+        { "locationWhenInUsePermission": "Xonbay Business uses your location to confirm that your shop is near the area you select." }
+      ],
+      [
+        "expo-image-picker",
+        { "photosPermission": "Xonbay Business lets you choose a logo for your shop." }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/adaptive-icon.png",

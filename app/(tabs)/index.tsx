@@ -41,7 +41,7 @@ export default function DashboardScreen() {
         <Text style={styles.overline}>XONBAY BUSINESS</Text>
         <Text style={styles.workspaceName} numberOfLines={1}>{currentShop?.name || 'Your workspace'}</Text>
       </View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Switch shop" onPress={() => router.push('/(tabs)/settings')} style={styles.roundButton}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Switch shop" onPress={() => router.push('/workspace')} style={styles.roundButton}>
         <Ionicons name="swap-horizontal-outline" size={20} color={palette.ink} />
       </Pressable>
     </View>

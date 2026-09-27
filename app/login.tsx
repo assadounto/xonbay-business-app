@@ -12,7 +12,7 @@ export default function Login() {
   const submit = async () => {
     if (!email.trim() || !password) return;
     setLoading(true);
-    try { await signIn(email, password); router.replace('/(tabs)'); }
+    try { await signIn(email, password); router.replace('/workspace'); }
     catch (error) { Alert.alert('Sign in failed', error instanceof Error ? error.message : 'Please try again.'); }
     finally { setLoading(false); }
   };

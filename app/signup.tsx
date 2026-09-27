@@ -30,7 +30,7 @@ export default function SignUp() {
       } else {
         if (!name.trim() || username.trim().length < 3 || password.length < 8) throw new Error('Add your name, a username of at least 3 characters and a password of at least 8 characters.');
         await signUp({ email, name, username, password });
-        router.replace('/(tabs)');
+        router.replace('/workspace');
       }
     } catch (error) {
       Alert.alert('Could not continue', error instanceof Error ? error.message : 'Please try again.');

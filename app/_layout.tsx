@@ -16,6 +16,7 @@ export default function RootLayout() {
             <StatusBar style="dark" />
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.background } }}>
             <Stack.Screen name="index" />
+            <Stack.Screen name="workspace" />
             <Stack.Screen name="login" />
             <Stack.Screen name="signup" />
             <Stack.Screen name="create-shop" />
