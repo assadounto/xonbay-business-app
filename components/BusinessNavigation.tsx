@@ -2,27 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useSegments, type Href } from 'expo-router';
 import { type DrawerContentComponentProps } from 'expo-router/drawer';
 import React, { useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Alert, Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShops } from '@/context/ShopContext';
 import type { Shop } from '@/lib/types';
+import { businessNavGroups, businessWebUrl, canAccess, type BusinessNavItem } from '@/lib/business-navigation';
 import { palette } from '@/theme/colors';
-
-type NavigationItem = { title: string; icon: keyof typeof Ionicons.glyphMap; href: Href; route: string };
-const groups: { label: string; items: NavigationItem[] }[] = [
-  { label: 'General', items: [{ title: 'Overview', icon: 'grid-outline', href: '/(business)/(tabs)', route: 'index' }] },
-  { label: 'Catalog & Sales', items: [
-    { title: 'Products & Inventory', icon: 'cube-outline', href: '/(business)/(tabs)/products', route: 'products' },
-    { title: 'Add Product', icon: 'add-circle-outline', href: '/create-product', route: 'create-product' },
-    { title: 'Orders', icon: 'receipt-outline', href: '/(business)/(tabs)/orders', route: 'orders' },
-    { title: 'Record a sale', icon: 'cash-outline', href: '/(business)/(tabs)/sell', route: 'sell' },
-  ] },
-  { label: 'Growth', items: [{ title: 'Events & Tickets', icon: 'calendar-outline', href: '/events', route: 'events' }] },
-  { label: 'Workspace', items: [
-    { title: 'Settings', icon: 'settings-outline', href: '/(business)/(tabs)/settings', route: 'settings' },
-    { title: 'Sync & storage', icon: 'cloud-upload-outline', href: '/sync-queue', route: 'sync-queue' },
-  ] },
-];
 
 function ShopAvatar({ shop, size = 36 }: { shop: Shop | null; size?: number }) {
   const uri = shop?.logo_url || shop?.image_url;
@@ -79,9 +64,15 @@ export function BusinessHeader({ onMenu }: { onMenu: () => void }) {
 export function BusinessDrawerContent({ navigation }: DrawerContentComponentProps) {
   const { currentShop, shops, selectShop } = useShops();
   const segments = useSegments();
-  const route = segments[segments.length - 1] === '(tabs)' ? 'index' : String(segments[segments.length - 1]);
+  const route = String(segments[segments.length - 1]);
   const [showShops, setShowShops] = useState(false);
   const navigate = (href: Href) => { navigation.closeDrawer(); setShowShops(false); router.push(href); };
+  const openItem = (item: BusinessNavItem) => {
+    if (!currentShop || !canAccess(currentShop, item.permission, item.ownerOnly)) return;
+    navigation.closeDrawer(); setShowShops(false);
+    if (item.route) { router.push(item.route); return; }
+    void Linking.openURL(businessWebUrl(currentShop, item.slug)).catch(() => Alert.alert('Could not open Xonbay', 'Check your connection and try again.'));
+  };
   const choose = async (shop: Shop) => { await selectShop(shop); navigation.closeDrawer(); setShowShops(false); router.replace('/(business)/(tabs)'); };
   return <SafeAreaView edges={['top', 'bottom']} style={styles.drawer}>
     <View style={styles.drawerHeading}><Text style={styles.drawerTitle}>Xonbay Business</Text><Pressable accessibilityRole="button" accessibilityLabel="Close navigation" onPress={() => navigation.closeDrawer()} style={styles.close}><Ionicons name="close" size={21} color={palette.ink} /></Pressable></View>
@@ -90,9 +81,15 @@ export function BusinessDrawerContent({ navigation }: DrawerContentComponentProp
       <ScrollView style={{ maxHeight: 205 }} nestedScrollEnabled>{shops.map((shop) => <Pressable key={shop.id} accessibilityRole="button" onPress={() => void choose(shop)} style={styles.shopOption}><ShopAvatar shop={shop} size={28} /><ShopLabel shop={shop} />{String(shop.id) === String(currentShop?.id) && <Ionicons name="checkmark" size={17} color={palette.primary} />}</Pressable>)}</ScrollView>
       <Pressable accessibilityRole="button" onPress={() => navigate('/create-shop')} style={styles.newShop}><Ionicons name="add-circle-outline" size={18} color={palette.primary} /><Text style={styles.newShopText}>Create New Shop</Text></Pressable>
     </View>}
-    <ScrollView contentContainerStyle={styles.navContent}>{groups.map((group) => <View key={group.label} style={styles.group}><Text style={styles.groupLabel}>{group.label.toUpperCase()}</Text>
-      {group.items.map((item) => { const active = item.route === route; return <Pressable key={item.title} accessibilityRole="button" accessibilityState={{ selected: active }} onPress={() => navigate(item.href)} style={[styles.navItem, active && styles.navSelected]}><Ionicons name={item.icon} size={19} color={active ? palette.primary : palette.textSecondary} /><Text style={[styles.navText, active && styles.navTextSelected]}>{item.title}</Text></Pressable>; })}
-    </View>)}</ScrollView>
+    <ScrollView contentContainerStyle={styles.navContent}>{businessNavGroups.map((group) => {
+      const items = group.items.filter((item) => canAccess(currentShop, item.permission, item.ownerOnly));
+      if (!items.length) return null;
+      return <View key={group.label} style={styles.group}><Text style={styles.groupLabel}>{group.label.toUpperCase()}</Text>
+        {items.map((item) => { const active = (item.slug === '' && (route === '(tabs)' || route === 'index')) ||
+          (item.route && (route === String(item.route).split('/').pop() || (route === 'create-product' && item.slug === 'products/new') || (route === 'sync-queue' && item.slug === 'sync')));
+          return <Pressable key={item.title} accessibilityRole="button" accessibilityLabel={item.route ? item.title : `${item.title}, opens web`} accessibilityState={{ selected: !!active }} onPress={() => openItem(item)} style={[styles.navItem, active && styles.navSelected]}><Ionicons name={item.icon as keyof typeof Ionicons.glyphMap} size={19} color={active ? palette.primary : palette.textSecondary} /><Text style={[styles.navText, active && styles.navTextSelected]}>{item.title}</Text>{!item.route && <Ionicons name="open-outline" size={13} color={palette.muted} />}</Pressable>; })}
+      </View>;
+    })}</ScrollView>
     <View style={styles.drawerFoot}><Pressable accessibilityRole="button" onPress={() => navigate('/workspace')} style={styles.navItem}><Ionicons name="storefront-outline" size={19} color={palette.textSecondary} /><Text style={styles.navText}>All shops</Text><Ionicons name="arrow-forward" size={16} color={palette.muted} /></Pressable></View>
   </SafeAreaView>;
 }

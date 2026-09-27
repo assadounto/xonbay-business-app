@@ -8,6 +8,8 @@ import { useSync } from '@/context/SyncContext';
 import { cachedCollection } from '@/lib/offline';
 import { money } from '@/lib/api';
 import type { Product } from '@/lib/types';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { Card, Field, Heading, Page, palette, PrimaryButton, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
 export default function SellScreen() {
@@ -23,7 +25,7 @@ export default function SellScreen() {
   const [error, setError] = useState('');
   const [cached, setCached] = useState(false);
   const load = useCallback(async () => {
-    if (!currentShop || !user) { setProducts([]); return; }
+    if (!currentShop || !user || !canAccess(currentShop, 'orders_management')) { setProducts([]); return; }
     setProducts([]); setQuantities({}); setLoading(true); setError('');
     try {
       const result = await cachedCollection<Product>(user.id, currentShop.id, 'products',
@@ -39,7 +41,7 @@ export default function SellScreen() {
   const visible = products.filter((product) => product.name.toLowerCase().includes(query.trim().toLowerCase()));
   const total = picked.reduce((sum, product) => sum + Number(product.price || 0) * quantities[product.id], 0);
   const recordSale = () => {
-    if (!currentShop || !picked.length) return;
+    if (!currentShop || !canAccess(currentShop, 'orders_management') || !picked.length) return;
     Alert.alert('Record cash sale', 'Confirm you collected ' + money(total) + ' in cash. This sale is saved on this device and sent to Xonbay when online. Stock may have changed since the catalog was saved.', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Save sale', onPress: async () => {
@@ -57,6 +59,7 @@ export default function SellScreen() {
       } },
     ]);
   };
+  if (currentShop && !canAccess(currentShop, 'orders_management')) return <BusinessAccessDenied />;
   return <Page footer={<View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
     <View style={{ flex: 1 }}><Text style={{ color: palette.muted, fontSize: 11, fontWeight: '800' }}>{picked.length} SELECTED</Text><Text style={{ color: palette.ink, fontWeight: '900', fontSize: 20, marginTop: 2 }} numberOfLines={1} adjustsFontSizeToFit>{money(total)}</Text></View>
     <View style={{ flex: 1.2 }}><PrimaryButton title="Save cash sale" loading={saving} disabled={!currentShop || !picked.length} onPress={recordSale} /></View>

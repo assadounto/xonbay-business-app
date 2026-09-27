@@ -7,6 +7,8 @@ import { useShops } from '@/context/ShopContext';
 import { api } from '@/lib/api';
 import { cachedCollection } from '@/lib/offline';
 import type { Event } from '@/lib/types';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { BackButton, Card, Heading, Page, palette, PrimaryButton, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
 export default function EventsScreen() {
@@ -17,7 +19,7 @@ export default function EventsScreen() {
   const [cached, setCached] = useState(false);
   const [error, setError] = useState('');
   const load = useCallback(async () => {
-    if (!user || !currentShop) { setEvents([]); return; }
+    if (!user || !currentShop || !canAccess(currentShop, 'events_tickets')) { setEvents([]); return; }
     setLoading(true); setError(''); setEvents([]);
     try {
       const result = await cachedCollection<Event>(user.id, currentShop.id, 'events',
@@ -28,6 +30,7 @@ export default function EventsScreen() {
     finally { setLoading(false); }
   }, [currentShop?.id, user?.id]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
+  if (currentShop && !canAccess(currentShop, 'events_tickets')) return <BusinessAccessDenied />;
   return <Page>
     <BackButton />
     <Heading eyebrow="YOUR WORKSPACE / EVENTS" title="Events" subtitle={currentShop ? 'Plan and manage events for ' + currentShop.name : 'Choose a shop first.'} />

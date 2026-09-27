@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { useShops } from '@/context/ShopContext';
 import { useSync } from '@/context/SyncContext';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { BackButton, Card, Field, Heading, Page, PrimaryButton } from '@/components/ui';
 
 export default function CreateProduct() {
@@ -14,7 +16,7 @@ export default function CreateProduct() {
   const [quantity, setQuantity] = useState('');
   const [saving, setSaving] = useState(false);
   const save = async () => {
-    if (!currentShop || !name.trim() || !/^\d+(\.\d{1,2})?$/.test(price) || !/^\d+$/.test(quantity)) {
+    if (!currentShop || !canAccess(currentShop, 'add_product') || !name.trim() || !/^\d+(\.\d{1,2})?$/.test(price) || !/^\d+$/.test(quantity)) {
       Alert.alert('Product details', 'Enter a name, a valid GHS price and a whole number for stock.'); return;
     }
     setSaving(true);
@@ -29,6 +31,7 @@ export default function CreateProduct() {
     } catch (error) { Alert.alert('Could not save', error instanceof Error ? error.message : 'Please try again.'); }
     finally { setSaving(false); }
   };
+  if (currentShop && !canAccess(currentShop, 'add_product')) return <BusinessAccessDenied />;
   return <Page>
     <BackButton />
     <Heading eyebrow="PRODUCT" title="Add a product" subtitle="Saved on your phone first. It syncs to your shop as an inactive listing; add images and activate it after review." />

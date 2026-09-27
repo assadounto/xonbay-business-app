@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { money } from '@/lib/api';
 import { cachedCollection, operations } from '@/lib/offline';
 import type { Product } from '@/lib/types';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { useShops } from '@/context/ShopContext';
 import { useAuth } from '@/context/AuthContext';
 import { useSync } from '@/context/SyncContext';
@@ -21,7 +23,7 @@ export default function ProductsScreen() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
-    if (!currentShop || !user) { setProducts([]); return; }
+    if (!currentShop || !user || !canAccess(currentShop, 'product_inventory')) { setProducts([]); return; }
     setProducts([]);
     setLoading(true); setError('');
     try {
@@ -36,6 +38,7 @@ export default function ProductsScreen() {
   useFocusEffect(useCallback(() => { void load(); }, [load]));
 
   const changeStock = (product: Product, amount: number) => {
+    if (!canAccess(currentShop, 'product_inventory')) return;
     const next = Math.max(0, (Number(product.quantity) || 0) + amount);
     Alert.alert('Update stock', 'Set ' + product.name + ' stock to ' + next + '?', [
       { text: 'Cancel', style: 'cancel' },
@@ -53,11 +56,12 @@ export default function ProductsScreen() {
     ]);
   };
 
+  if (currentShop && !canAccess(currentShop, 'product_inventory')) return <BusinessAccessDenied />;
   return <Page>
     <Heading eyebrow="YOUR WORKSPACE / CATALOG" title="Products" subtitle={currentShop ? 'Listings and inventory for ' + currentShop.name : 'Choose a shop to see its products.'} />
     {currentShop && <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-      <View style={{ flex: 1 }}><PrimaryButton title="Add product" onPress={() => router.push('/create-product')} /></View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Manage events" onPress={() => router.push('/events')} style={{ height: 52, width: 52, borderRadius: 14, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center', marginTop: 16 }}><Ionicons name="calendar-outline" color={palette.primary} size={23} /></Pressable>
+      {canAccess(currentShop, 'add_product') && <View style={{ flex: 1 }}><PrimaryButton title="Add product" onPress={() => router.push('/create-product')} /></View>}
+      {canAccess(currentShop, 'events_tickets') && <Pressable accessibilityRole="button" accessibilityLabel="Manage events" onPress={() => router.push('/events')} style={{ height: 52, width: 52, borderRadius: 14, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center', marginTop: 16 }}><Ionicons name="calendar-outline" color={palette.primary} size={23} /></Pressable>}
     </View>}
     {cached && <StatusPill label="Saved catalog · stock may have changed" tone="warning" />}
     {currentShop && <SectionTitle title="Your catalog" caption={products.length + ' products'} action="Refresh" onPress={() => void load()} />}

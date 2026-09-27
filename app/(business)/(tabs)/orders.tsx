@@ -6,6 +6,8 @@ import { api, money } from '@/lib/api';
 import { cachedRequest } from '@/lib/offline';
 import { useAuth } from '@/context/AuthContext';
 import type { Order } from '@/lib/types';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { useShops } from '@/context/ShopContext';
 import { Card, Heading, Page, palette, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
@@ -19,7 +21,7 @@ export default function OrdersScreen() {
   const [error, setError] = useState('');
   const [cached, setCached] = useState(false);
   const load = useCallback(async (nextPage = 1) => {
-    if (!currentShop || !user) { setOrders([]); return; }
+    if (!currentShop || !user || !canAccess(currentShop, 'orders_management')) { setOrders([]); return; }
     if (nextPage === 1) setOrders([]);
     setLoading(true); setError('');
     try {
@@ -34,6 +36,7 @@ export default function OrdersScreen() {
   }, [currentShop?.id, user?.id]);
   useFocusEffect(useCallback(() => { void load(1); }, [load]));
 
+  if (currentShop && !canAccess(currentShop, 'orders_management')) return <BusinessAccessDenied />;
   return <Page>
     <Heading eyebrow="YOUR WORKSPACE / ORDERS" title="Orders" subtitle={currentShop ? 'Keep track of every order for ' + currentShop.name : 'Choose a shop to see its orders.'} />
     {cached && <StatusPill label="Saved orders · reconnect for updates" tone="warning" />}

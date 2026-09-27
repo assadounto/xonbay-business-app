@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { useShops } from '@/context/ShopContext';
 import { useSync } from '@/context/SyncContext';
+import { canAccess } from '@/lib/business-navigation';
+import { BusinessAccessDenied } from '@/components/BusinessAccessDenied';
 import { BackButton, Card, Field, Heading, Page, PrimaryButton } from '@/components/ui';
 
 function parseLocal(value: string) {
@@ -22,7 +24,7 @@ export default function CreateEvent() {
   const [saving, setSaving] = useState(false);
   const save = async () => {
     const startAt = parseLocal(start), endAt = parseLocal(end);
-    if (!currentShop || !title.trim() || !startAt || !endAt || endAt <= startAt) {
+    if (!currentShop || !canAccess(currentShop, 'events_tickets') || !title.trim() || !startAt || !endAt || endAt <= startAt) {
       Alert.alert('Event details', 'Add a title and valid start/end dates. End must be after start.'); return;
     }
     setSaving(true);
@@ -37,6 +39,7 @@ export default function CreateEvent() {
     } catch (error) { Alert.alert('Could not save', error instanceof Error ? error.message : 'Please try again.'); }
     finally { setSaving(false); }
   };
+  if (currentShop && !canAccess(currentShop, 'events_tickets')) return <BusinessAccessDenied />;
   return <Page>
     <BackButton />
     <Heading eyebrow="EVENT" title="Create an event" subtitle="Save an offline draft. Review tickets and media before publishing online." />

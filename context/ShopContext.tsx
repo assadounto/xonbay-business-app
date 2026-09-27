@@ -27,10 +27,13 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     try {
       const { value: data } = await cachedRequest(user.id, 0, 'shops', () =>
         api<{ owned?: Array<Shop | { shop: Shop }>; member?: Array<Shop | { shop: Shop }> }>('/user_shops?role=all'));
-      const normalize = (entry: Shop | { shop: Shop }, access: 'owner' | 'member'): Shop | null => {
+      const normalize = (entry: Shop | { shop: Shop; permissions?: Record<string, boolean>; access_level?: string; member_role?: string; role?: string }, access: 'owner' | 'member'): Shop | null => {
         const shop = 'shop' in entry ? entry.shop : entry;
         if (!shop?.id) return null;
-        return { ...shop, seller_access: access, access_level: shop.access_level || (access === 'owner' ? 'owner' : ('role' in entry ? String(entry.role || 'member') : 'member')) };
+        const accessEntry = entry as Shop & { member_role?: string };
+        return { ...shop, seller_access: access, is_owner: access === 'owner' || shop.is_owner === true,
+          access_level: access === 'owner' ? 'owner' : String(accessEntry.access_level || accessEntry.member_role || accessEntry.role || shop.access_level || shop.role || 'member'),
+          permissions: { ...shop.permissions, ...accessEntry.permissions } };
       };
       const all = [...(data.owned || []).map((item) => normalize(item, 'owner')), ...(data.member || []).map((item) => normalize(item, 'member'))];
       const byId = new Map<string, Shop>();
