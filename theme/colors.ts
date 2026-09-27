@@ -26,6 +26,8 @@ export const lightColors = {
   error: '#EF4444',
   errorSoft: '#FEF2F2',
   white: '#FFFFFF',
+  overlay: 'rgba(17,24,39,0.45)',
+  overlaySoft: 'rgba(17,24,39,0.28)',
 } as const;
 
 export const darkColors = {
@@ -49,6 +51,8 @@ export const darkColors = {
   error: '#F87171',
   errorSoft: '#7F1D1D',
   white: '#FFFFFF',
+  overlay: 'rgba(0,0,0,0.65)',
+  overlaySoft: 'rgba(0,0,0,0.45)',
 } as const;
 
 // Swap this one reference when the app adds a supported theme selector.

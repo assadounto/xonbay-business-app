@@ -7,6 +7,7 @@ import { cachedRequest } from '@/lib/offline';
 import type { Dashboard } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { useShops } from '@/context/ShopContext';
+import { BusinessDashboardNavigation } from '@/components/BusinessDashboardNavigation';
 import { Card, Heading, Page, palette, PrimaryButton, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
 export default function DashboardScreen() {
@@ -35,16 +36,7 @@ export default function DashboardScreen() {
   const series = report?.series?.sales_7d_ghs || [];
   const maxSale = Math.max(...series, 1);
   return <Page>
-    <View style={styles.topRow}>
-      <View style={styles.mark}><Text style={styles.markText}>X</Text></View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.overline}>XONBAY BUSINESS</Text>
-        <Text style={styles.workspaceName} numberOfLines={1}>{currentShop?.name || 'Your workspace'}</Text>
-      </View>
-      <Pressable accessibilityRole="button" accessibilityLabel="Switch shop" onPress={() => router.push('/workspace')} style={styles.roundButton}>
-        <Ionicons name="swap-horizontal-outline" size={20} color={palette.ink} />
-      </Pressable>
-    </View>
+    <BusinessDashboardNavigation />
     <Heading title={user?.name ? 'Good to see you, ' + user.name.split(' ')[0] : 'Your day at a glance'} subtitle="Your shop, all in one place." />
     {shopsLoading && !currentShop && <ActivityIndicator />}
     {shopsError && <StateMessage text={shopsError} onRetry={() => void refresh()} />}
@@ -117,12 +109,6 @@ function ActionTile({ icon, title, caption, onPress }: { icon: keyof typeof Ioni
 }
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 28 },
-  mark: { height: 42, width: 42, borderRadius: 14, backgroundColor: palette.primary, alignItems: 'center', justifyContent: 'center' },
-  markText: { color: palette.white, fontWeight: '900', fontSize: 25 },
-  overline: { fontSize: 10, fontWeight: '900', color: palette.muted, letterSpacing: 1.5 },
-  workspaceName: { fontSize: 17, fontWeight: '900', color: palette.ink, marginTop: 2 },
-  roundButton: { height: 42, width: 42, borderRadius: 14, backgroundColor: palette.surface, borderWidth: 1, borderColor: palette.border, alignItems: 'center', justifyContent: 'center' },
   hero: { backgroundColor: palette.surface, borderRadius: 16, padding: 22, marginBottom: 15, borderWidth: 1, borderColor: palette.border },
   heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   heroLabel: { color: palette.primary, fontSize: 11, fontWeight: '900', letterSpacing: 1.2 },
