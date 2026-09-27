@@ -42,7 +42,7 @@ export default function OrdersScreen() {
     {!shopsLoading && !currentShop && <StateMessage text="Create or select a shop from Home or Settings to see orders." />}
     {error && <StateMessage text={error} onRetry={() => void load(page)} />}
     {loading && !orders.length && <ActivityIndicator />}
-    {!loading && !error && currentShop && !orders.length && <Card><View style={{ alignItems: 'center', paddingVertical: 18 }}><Ionicons name="receipt-outline" size={32} color={palette.blue} /><Text style={{ color: palette.ink, fontSize: 17, fontWeight: '900', marginTop: 12 }}>No orders yet</Text><Text style={{ color: palette.muted, marginTop: 6, textAlign: 'center' }}>New customer orders will appear here.</Text></View></Card>}
+    {!loading && !error && currentShop && !orders.length && <Card><View style={{ alignItems: 'center', paddingVertical: 18 }}><Ionicons name="receipt-outline" size={32} color={palette.primary} /><Text style={{ color: palette.ink, fontSize: 17, fontWeight: '900', marginTop: 12 }}>No orders yet</Text><Text style={{ color: palette.muted, marginTop: 6, textAlign: 'center' }}>New customer orders will appear here.</Text></View></Card>}
     {orders.map((order) => {
       const customer = typeof order.customer === 'string' ? order.customer : order.customer?.name;
       const totalGhs = order.total_ghs ?? (order.amount_pesewas !== undefined ? order.amount_pesewas / 100 : undefined);
@@ -62,6 +62,6 @@ export default function OrdersScreen() {
         </View>
       </Card>;
     })}
-    {orders.length < total && <Pressable accessibilityRole="button" disabled={loading} onPress={() => void load(page + 1)} style={{ padding: 16, alignItems: 'center' }}><Text style={{ color: palette.blue, fontWeight: '800' }}>{loading ? 'Loading…' : 'Load more orders'}</Text></Pressable>}
+    {orders.length < total && <Pressable accessibilityRole="button" disabled={loading} onPress={() => void load(page + 1)} style={{ padding: 16, alignItems: 'center' }}><Text style={{ color: palette.primary, fontWeight: '800' }}>{loading ? 'Loading…' : 'Load more orders'}</Text></Pressable>}
   </Page>;
 }

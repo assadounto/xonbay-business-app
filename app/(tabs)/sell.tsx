@@ -62,8 +62,8 @@ export default function SellScreen() {
     <View style={{ flex: 1.2 }}><PrimaryButton title="Save cash sale" loading={saving} disabled={!currentShop || !picked.length} onPress={recordSale} /></View>
   </View>}>
     <Heading eyebrow="POINT OF SALE" title="Record a sale" subtitle={currentShop ? 'Cash sales · ' + currentShop.name : 'Select a shop first.'} />
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: palette.indigoSoft, borderRadius: 17, padding: 14, marginBottom: 16 }}>
-      <Ionicons name="cloud-offline-outline" size={22} color={palette.blue} />
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: palette.primaryMuted, borderRadius: 17, padding: 14, marginBottom: 16 }}>
+      <Ionicons name="cloud-offline-outline" size={22} color={palette.primary} />
       <Text style={{ color: palette.ink, fontSize: 12, lineHeight: 18, flex: 1 }}>Sales save on this device first. Xonbay confirms stock and price when they sync.</Text>
     </View>
     {cached && <StatusPill label="Saved catalog · confirm prices with your customer" tone="warning" />}
@@ -75,14 +75,14 @@ export default function SellScreen() {
     {!!query && !visible.length && <StateMessage text="No products match your search." />}
     {visible.map((product) => <Card key={product.id}>
       <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-        <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: palette.indigoSoft, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="cube-outline" size={20} color={palette.blue} /></View>
-        <View style={{ flex: 1 }}><Text style={{ color: palette.ink, fontWeight: '900' }} numberOfLines={2}>{product.name}</Text><Text style={{ color: palette.blue, fontWeight: '800', marginTop: 4 }}>{money(Number(product.price || 0))}</Text></View>
+        <View style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="cube-outline" size={20} color={palette.primary} /></View>
+        <View style={{ flex: 1 }}><Text style={{ color: palette.ink, fontWeight: '900' }} numberOfLines={2}>{product.name}</Text><Text style={{ color: palette.primary, fontWeight: '800', marginTop: 4 }}>{money(Number(product.price || 0))}</Text></View>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 13, marginTop: 14 }}>
         <Text style={{ color: palette.muted, fontSize: 12, flex: 1 }}>{product.quantity ?? 0} in last stock count</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel={'Remove ' + product.name} onPress={() => setQuantities((previous) => ({ ...previous, [product.id]: Math.max(0, (previous[product.id] || 0) - 1) }))} style={{ width: 35, height: 35, borderRadius: 11, backgroundColor: palette.indigoSoft, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="remove" color={palette.blue} size={18} /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel={'Remove ' + product.name} onPress={() => setQuantities((previous) => ({ ...previous, [product.id]: Math.max(0, (previous[product.id] || 0) - 1) }))} style={{ width: 35, height: 35, borderRadius: 11, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="remove" color={palette.primary} size={18} /></Pressable>
         <Text style={{ fontSize: 16, fontWeight: '900', color: palette.ink, minWidth: 18, textAlign: 'center' }}>{quantities[product.id] || 0}</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel={'Add ' + product.name} onPress={() => setQuantities((previous) => ({ ...previous, [product.id]: Math.min(999, (previous[product.id] || 0) + 1) }))} style={{ width: 35, height: 35, borderRadius: 11, backgroundColor: palette.indigoSoft, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="add" color={palette.blue} size={18} /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel={'Add ' + product.name} onPress={() => setQuantities((previous) => ({ ...previous, [product.id]: Math.min(999, (previous[product.id] || 0) + 1) }))} style={{ width: 35, height: 35, borderRadius: 11, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="add" color={palette.primary} size={18} /></Pressable>
       </View>
     </Card>)}
     <SectionTitle title="Customer" caption="Optional for walk-in sales" />

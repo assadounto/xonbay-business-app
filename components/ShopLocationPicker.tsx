@@ -45,7 +45,7 @@ export function ShopLocationPicker({ value, onSelected }: { value: GhanaBusiness
   };
   return <>
     <Pressable accessibilityRole="button" onPress={() => { setSelected(value); setOpen(true); void locate(); }} style={styles.entry}>
-      <View style={styles.icon}><Ionicons name="location-outline" color={palette.blue} size={21} /></View>
+      <View style={styles.icon}><Ionicons name="location-outline" color={palette.primary} size={21} /></View>
       <View style={{ flex: 1 }}><Text style={styles.name}>{value ? value.name + ', ' + value.region : 'Choose location'}</Text><Text style={styles.detail}>{value ? value.district + ' · Tap to change' : 'Select the exact business area'}</Text></View>
       <Ionicons name="chevron-forward" size={18} color={palette.muted} />
     </Pressable>
@@ -56,12 +56,12 @@ export function ShopLocationPicker({ value, onSelected }: { value: GhanaBusiness
         </View>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 20, paddingBottom: 24 }}>
           <Pressable accessibilityRole="button" onPress={() => void locate()} style={styles.gps}>
-            <Ionicons name="navigate-outline" size={24} color={palette.blue} /><View style={{ flex: 1 }}><Text style={styles.name}>{locating ? 'Finding your location…' : position ? 'Device location confirmed' : 'Use my current area'}</Text><Text style={styles.detail}>GPS is required to verify your shop area.</Text></View>{locating && <ActivityIndicator color={palette.blue} />}
+            <Ionicons name="navigate-outline" size={24} color={palette.primary} /><View style={{ flex: 1 }}><Text style={styles.name}>{locating ? 'Finding your location…' : position ? 'Device location confirmed' : 'Use my current area'}</Text><Text style={styles.detail}>GPS is required to verify your shop area.</Text></View>{locating && <ActivityIndicator color={palette.primary} />}
           </Pressable>
           <Text style={[styles.name, { marginTop: 22, marginBottom: 9 }]}>Search locations</Text>
-          <TextInput style={styles.input} placeholder="Search area, district or region" placeholderTextColor="#94A3B8" value={query} onChangeText={setQuery} />
+          <TextInput style={styles.input} placeholder="Search area, district or region" placeholderTextColor={palette.placeholder} value={query} onChangeText={setQuery} />
           {results.map((item) => { const active = selected?.name === item.name && selected.region === item.region; return <Pressable accessibilityRole="button" accessibilityState={{ selected: active }} onPress={() => { setSelected(item); setError(''); }} key={item.name + item.region} style={[styles.row, active && styles.active]}>
-            <Ionicons name="location-outline" size={18} color={active ? palette.blue : palette.muted} /><View style={{ flex: 1 }}><Text style={styles.name}>{item.name}</Text><Text style={styles.detail}>{item.district} · {item.region}</Text></View>{active && <Ionicons name="checkmark" size={19} color={palette.blue} />}
+            <Ionicons name="location-outline" size={18} color={active ? palette.primary : palette.muted} /><View style={{ flex: 1 }}><Text style={styles.name}>{item.name}</Text><Text style={styles.detail}>{item.district} · {item.region}</Text></View>{active && <Ionicons name="checkmark" size={19} color={palette.primary} />}
           </Pressable>; })}
           {!results.length && <Text style={styles.detail}>No matching location found.</Text>}
           {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -72,19 +72,19 @@ export function ShopLocationPicker({ value, onSelected }: { value: GhanaBusiness
   </>;
 }
 const styles = StyleSheet.create({
-  entry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderColor: palette.border, borderWidth: 1, backgroundColor: palette.white, borderRadius: 14 },
-  icon: { width: 40, height: 40, borderRadius: 11, backgroundColor: palette.indigoSoft, alignItems: 'center', justifyContent: 'center' },
-  sheet: { flex: 1, backgroundColor: palette.white },
+  entry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderColor: palette.border, borderWidth: 1, backgroundColor: palette.surface, borderRadius: 14 },
+  icon: { width: 40, height: 40, borderRadius: 11, backgroundColor: palette.primaryMuted, alignItems: 'center', justifyContent: 'center' },
+  sheet: { flex: 1, backgroundColor: palette.surface },
   header: { flexDirection: 'row', gap: 12, alignItems: 'center', borderBottomWidth: 1, borderColor: palette.border, padding: 20 },
-  eyebrow: { fontSize: 10, color: palette.blue, fontWeight: '900', letterSpacing: 1.3 },
+  eyebrow: { fontSize: 10, color: palette.primary, fontWeight: '900', letterSpacing: 1.3 },
   title: { fontSize: 22, fontWeight: '900', color: palette.ink, marginTop: 4 },
   name: { color: palette.ink, fontWeight: '800', fontSize: 14 },
   detail: { color: palette.muted, fontSize: 12, marginTop: 4, lineHeight: 18 },
   close: { height: 38, width: 38, borderRadius: 19, backgroundColor: palette.background, justifyContent: 'center', alignItems: 'center' },
-  gps: { backgroundColor: palette.indigoSoft, borderRadius: 14, padding: 16, flexDirection: 'row', gap: 12, alignItems: 'center' },
+  gps: { backgroundColor: palette.primaryMuted, borderRadius: 14, padding: 16, flexDirection: 'row', gap: 12, alignItems: 'center' },
   input: { borderColor: palette.border, borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, minHeight: 48, color: palette.ink },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 13 },
-  active: { backgroundColor: palette.indigoSoft },
-  error: { color: '#B83E4B', marginTop: 18, lineHeight: 20, fontWeight: '700' },
+  active: { backgroundColor: palette.primaryMuted },
+  error: { color: palette.error, marginTop: 18, lineHeight: 20, fontWeight: '700' },
   footer: { borderTopWidth: 1, borderColor: palette.border, paddingHorizontal: 20, paddingBottom: 12 },
 });

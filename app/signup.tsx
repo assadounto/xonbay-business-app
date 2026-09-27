@@ -51,7 +51,7 @@ export default function SignUp() {
         <PrimaryButton title={step === 'account' ? 'Create account' : 'Continue'} onPress={() => void next()} loading={loading} />
         </Card>
         <Pressable style={{ alignItems: 'center', marginTop: 22 }} onPress={() => step === 'email' ? router.replace('/login') : setStep(step === 'account' ? 'code' : 'email')}>
-          <Text style={{ color: palette.blue, fontWeight: '700' }}>{step === 'email' ? 'Already have an account? Sign in' : 'Back'}</Text>
+          <Text style={{ color: palette.primary, fontWeight: '700' }}>{step === 'email' ? 'Already have an account? Sign in' : 'Back'}</Text>
         </Pressable>
     </FormScreen>
   );

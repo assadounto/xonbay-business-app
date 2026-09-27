@@ -5,6 +5,7 @@ A separate Expo/React Native merchant app for Xonbay. Android and iOS share the 
 ## What works
 
 - Sign in, verify an email and create an account. Access and refresh tokens live in SecureStore.
+- Choose a business workspace and create a shop through the five-step setup (handle, GPS-confirmed location, categories, optional logo, preview). New shops and logo uploads require internet access.
 - View shops, the dashboard, previously opened order pages, the product catalog, and events offline after they have been fetched once for that account and shop.
 - Save product and event drafts locally. They sync as **inactive products** and **draft events**, so new listings and events are not unexpectedly public. Add media, ticket tiers, variants and publishing details online before activating them.
 - Record an in-person cash sale offline from synced active products without variants. The server recalculates the total and deducts stock when the sale syncs. A queued sale is not yet an accepted online order.
@@ -13,7 +14,7 @@ A separate Expo/React Native merchant app for Xonbay. Android and iOS share the 
 
 ## Install and run
 
-Use Node.js 20.19 or newer.
+Use Node.js 22.13 or newer (CI uses 22.13).
 
 ```sh
 npm ci
@@ -24,6 +25,10 @@ npm start
 Open in Expo Go, or use `npm run android` / `npm run ios` with a configured native toolchain. Run `npm run typecheck` before committing. `npx expo export --platform android` verifies the Android JS bundle.
 
 The default API is `https://api.xonbay.com/v1`. Set `EXPO_PUBLIC_API_URL` to a staging API URL for testing. Expo embeds every `EXPO_PUBLIC_` value in the app; never use it for secrets.
+
+## Appearance
+
+Edit `theme/colors.ts` to update mobile colors in one place. Its light tokens match the Xonbay web tokens in `xonbay.com/src/app/globals.css`. Screens use semantic roles such as `primary`, `surface`, `border`, and `error`; cards and navigation use borders with no elevation or shadows. A dark palette is defined for future theme support, but the app currently renders the light palette.
 
 ## Offline behavior and recovery
 

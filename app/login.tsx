@@ -27,7 +27,7 @@ export default function Login() {
         </Card>
         <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 28 }}>
           <Text style={{ color: palette.muted }}>New to Xonbay? </Text>
-          <Pressable onPress={() => router.push('/signup')}><Text style={{ color: palette.blue, fontWeight: '700' }}>Create account</Text></Pressable>
+          <Pressable onPress={() => router.push('/signup')}><Text style={{ color: palette.primary, fontWeight: '700' }}>Create account</Text></Pressable>
         </View>
     </FormScreen>
   );

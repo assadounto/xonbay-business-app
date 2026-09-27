@@ -14,21 +14,9 @@ import { router, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSync } from "@/context/SyncContext";
+import { palette } from "@/theme/colors";
 
-export const palette = {
-  background: "#F5F6FA",
-  ink: "#1D2130",
-  muted: "#626B80",
-  blue: "#5865F2",
-  border: "#E4E7F0",
-  white: "#FFFFFF",
-  navy: "#20243D",
-  indigoSoft: "#EEF0FF",
-  green: "#137C64",
-  greenSoft: "#E5F6EF",
-  amber: "#A9651F",
-  amberSoft: "#FFF2DE",
-};
+export { palette } from "@/theme/colors";
 export function Page({ children, footer }: { children: React.ReactNode; footer?: React.ReactNode }) {
   const { online, pending, attention } = useSync();
   const insets = useSafeAreaInsets();
@@ -54,9 +42,9 @@ export function Page({ children, footer }: { children: React.ReactNode; footer?:
           accessibilityRole="button"
           accessibilityLabel="View sync status"
           onPress={() => router.push("/sync-queue")}
-          style={[styles.syncBanner, { backgroundColor: attention ? palette.amberSoft : palette.indigoSoft }]}
+          style={[styles.syncBanner, { backgroundColor: attention ? palette.warningSoft : palette.primaryMuted }]}
         >
-          <Ionicons name={attention ? "alert-circle-outline" : online ? "cloud-upload-outline" : "cloud-offline-outline"} size={20} color={attention ? palette.amber : palette.blue} />
+          <Ionicons name={attention ? "alert-circle-outline" : online ? "cloud-upload-outline" : "cloud-offline-outline"} size={20} color={attention ? palette.warning : palette.primary} />
           <View style={{ flex: 1 }}>
             <Text style={styles.syncTitle}>{attention ? "Needs your attention" : online ? "Syncing your changes" : "Working offline"}</Text>
             <Text style={styles.syncSubtitle}>{pending} waiting to sync{attention ? " · " + attention + " to review" : ""}</Text>
@@ -114,7 +102,7 @@ export function Card({ children }: { children: React.ReactNode }) {
 export function SectionTitle({ title, caption, action, onPress }: { title: string; caption?: string; action?: string; onPress?: () => void }) {
   return <View style={styles.sectionRow}>
     <View style={{ flex: 1 }}><Text style={styles.sectionTitle}>{title}</Text>{caption && <Text style={styles.sectionCaption}>{caption}</Text>}</View>
-    {action && onPress && <Pressable accessibilityRole="button" onPress={onPress} style={styles.sectionAction}><Text style={{ color: palette.blue, fontWeight: "800" }}>{action}</Text><Ionicons name="chevron-forward" size={15} color={palette.blue} /></Pressable>}
+    {action && onPress && <Pressable accessibilityRole="button" onPress={onPress} style={styles.sectionAction}><Text style={{ color: palette.primary, fontWeight: "800" }}>{action}</Text><Ionicons name="chevron-forward" size={15} color={palette.primary} /></Pressable>}
   </View>;
 }
 export function BackButton() {
@@ -126,8 +114,8 @@ export function BrandHeader() {
   return <View style={styles.brandRow}><View style={styles.brandMark}><Text style={styles.brandX}>X</Text></View><View><Text style={styles.brandName}>Xonbay</Text><Text style={styles.brandCaption}>BUSINESS WORKSPACE</Text></View></View>;
 }
 export function StatusPill({ label, tone = "neutral" }: { label: string; tone?: "neutral" | "good" | "warning" }) {
-  const color = tone === "good" ? palette.green : tone === "warning" ? palette.amber : palette.blue;
-  const backgroundColor = tone === "good" ? palette.greenSoft : tone === "warning" ? palette.amberSoft : palette.indigoSoft;
+  const color = tone === "good" ? palette.success : tone === "warning" ? palette.warning : palette.primary;
+  const backgroundColor = tone === "good" ? palette.successSoft : tone === "warning" ? palette.warningSoft : palette.primaryMuted;
   return <View style={[styles.pill, { backgroundColor }]}><Text style={{ color, fontSize: 11, fontWeight: "800" }} numberOfLines={1}>{label}</Text></View>;
 }
 export function PrimaryButton({
@@ -149,7 +137,7 @@ export function PrimaryButton({
       style={[styles.button, (loading || disabled) && styles.disabled]}
     >
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={palette.white} />
       ) : (
         <Text style={styles.buttonText}>{title}</Text>
       )}
@@ -179,7 +167,7 @@ export function Field({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        placeholderTextColor="#94A3B8"
+        placeholderTextColor={palette.placeholder}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -211,15 +199,15 @@ export function StateMessage({
 export const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: palette.background },
   pageContent: { paddingHorizontal: 20 },
-  stickyFooter: { backgroundColor: palette.white, borderTopWidth: 1, borderTopColor: palette.border, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
+  stickyFooter: { backgroundColor: palette.surface, borderTopWidth: 1, borderTopColor: palette.border, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
   formContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 32 },
   formCentered: { justifyContent: "center" },
   heading: { marginBottom: 20 },
-  syncBanner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 18, marginBottom: 18 },
+  syncBanner: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, borderColor: palette.border, marginBottom: 18 },
   syncTitle: { color: palette.ink, fontWeight: "800", fontSize: 13 },
   syncSubtitle: { color: palette.muted, fontSize: 12, marginTop: 2 },
   eyebrow: {
-    color: palette.blue,
+    color: palette.primary,
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 1.5,
@@ -233,17 +221,12 @@ export const styles = StyleSheet.create({
     marginTop: 6,
   },
   card: {
-    backgroundColor: palette.white,
-    borderRadius: 20,
+    backgroundColor: palette.surface,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: palette.border,
     padding: 18,
     marginBottom: 14,
-    shadowColor: "#22284D",
-    shadowOpacity: 0.04,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 2,
   },
   sectionRow: { flexDirection: "row", alignItems: "center", marginTop: 14, marginBottom: 12, gap: 10 },
   sectionTitle: { color: palette.ink, fontWeight: "900", fontSize: 19, letterSpacing: -0.3 },
@@ -251,13 +234,13 @@ export const styles = StyleSheet.create({
   sectionAction: { flexDirection: "row", alignItems: "center", paddingVertical: 8 },
   backButton: { alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 9, marginBottom: 18 },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 34 },
-  brandMark: { width: 44, height: 44, borderRadius: 14, backgroundColor: palette.blue, alignItems: "center", justifyContent: "center" },
-  brandX: { color: "#fff", fontWeight: "900", fontSize: 25 },
+  brandMark: { width: 44, height: 44, borderRadius: 14, backgroundColor: palette.primary, alignItems: "center", justifyContent: "center" },
+  brandX: { color: palette.white, fontWeight: "900", fontSize: 25 },
   brandName: { color: palette.ink, fontWeight: "900", fontSize: 19, lineHeight: 22 },
   brandCaption: { color: palette.muted, fontWeight: "800", fontSize: 10, letterSpacing: 1 },
   pill: { alignSelf: "flex-start", borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 },
   button: {
-    backgroundColor: palette.blue,
+    backgroundColor: palette.primary,
     borderRadius: 14,
     minHeight: 52,
     alignItems: "center",
@@ -266,7 +249,7 @@ export const styles = StyleSheet.create({
     marginTop: 16,
   },
   disabled: { opacity: 0.5 },
-  buttonText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+  buttonText: { color: palette.white, fontWeight: "700", fontSize: 15 },
   field: { marginBottom: 15 },
   label: {
     color: palette.ink,
@@ -277,12 +260,12 @@ export const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: palette.border,
-    backgroundColor: "#fff",
+    backgroundColor: palette.surface,
     borderRadius: 12,
     paddingHorizontal: 14,
     minHeight: 50,
     fontSize: 15,
     color: palette.ink,
   },
-  link: { color: palette.blue, fontWeight: "700", marginTop: 12 },
+  link: { color: palette.primary, fontWeight: "700", marginTop: 12 },
 });

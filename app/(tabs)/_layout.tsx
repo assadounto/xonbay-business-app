@@ -15,16 +15,16 @@ export default function BusinessTabs() {
     <Tabs screenOptions={{
       headerShown: false,
       sceneStyle: { backgroundColor: palette.background },
-      tabBarActiveTintColor: palette.blue,
+      tabBarActiveTintColor: palette.primary,
       tabBarInactiveTintColor: palette.muted,
-      tabBarActiveBackgroundColor: '#EEF0FF',
+      tabBarActiveBackgroundColor: palette.primaryMuted,
       tabBarHideOnKeyboard: true,
       tabBarLabelStyle: { fontWeight: '700', fontSize: 10 },
       tabBarItemStyle: { borderRadius: 16, marginHorizontal: 3, marginTop: 7, marginBottom: 5 },
       tabBarStyle: {
         height: 62 + bottom, paddingBottom: Math.max(bottom, 6), paddingTop: 2,
-        backgroundColor: palette.white, borderTopColor: palette.border,
-        borderTopWidth: 1, elevation: 10,
+        backgroundColor: palette.surface, borderTopColor: palette.border,
+        borderTopWidth: 1, elevation: 0, shadowOpacity: 0,
       },
     }}>
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" color={color} size={size} /> }} />
