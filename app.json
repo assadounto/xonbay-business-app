@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "com.dimarak.xonbay.business",
-      "edgeToEdgeEnabled": true,
+
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#102A63"
@@ -26,12 +26,17 @@
       "expo-router",
       "expo-secure-store",
       "expo-sqlite",
-      ["expo-splash-screen", {
-        "image": "./assets/adaptive-icon.png",
-        "imageWidth": 200,
-        "resizeMode": "contain",
-        "backgroundColor": "#102A63"
-      }]
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/adaptive-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#102A63"
+        }
+      ],
+      "expo-status-bar",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
