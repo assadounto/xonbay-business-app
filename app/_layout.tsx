@@ -1,19 +1,20 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { palette } from '@/components/ui';
 import { AuthProvider } from '@/context/AuthContext';
 import { ShopProvider } from '@/context/ShopContext';
 import { SyncProvider } from '@/context/SyncContext';
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics} style={{ backgroundColor: palette.background }}>
       <AuthProvider>
         <ShopProvider>
           <SyncProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false }}>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.background } }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="login" />
             <Stack.Screen name="signup" />
@@ -23,7 +24,7 @@ export default function RootLayout() {
             <Stack.Screen name="create-event" />
             <Stack.Screen name="sync-queue" />
             <Stack.Screen name="(tabs)" />
-          </Stack>
+            </Stack>
           </SyncProvider>
         </ShopProvider>
       </AuthProvider>

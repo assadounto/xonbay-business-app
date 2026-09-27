@@ -1,6 +1,8 @@
 import React from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,21 +10,36 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSync } from "@/context/SyncContext";
 
 export const palette = {
-  background: "#F6F8FC",
-  ink: "#111827",
-  muted: "#64748B",
-  blue: "#175CD3",
-  border: "#E2E8F0",
+  background: "#F5F6FA",
+  ink: "#1D2130",
+  muted: "#626B80",
+  blue: "#5865F2",
+  border: "#E4E7F0",
   white: "#FFFFFF",
 };
 export function Page({ children }: { children: React.ReactNode }) {
   const { online, pending, attention } = useSync();
+  const insets = useSafeAreaInsets();
+  const segments = useSegments();
+  const hasTabBar = segments[0] === "(tabs)";
   return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={[
+        styles.pageContent,
+        {
+          paddingTop: insets.top + 20,
+          paddingBottom: hasTabBar ? 32 : insets.bottom + 32,
+        },
+      ]}
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+    >
       {(!online || pending > 0 || attention > 0) && (
         <Pressable
           accessibilityRole="button"
@@ -42,6 +59,27 @@ export function Page({ children }: { children: React.ReactNode }) {
       )}
       {children}
     </ScrollView>
+  );
+}
+export function FormScreen({
+  children,
+  centered = false,
+}: {
+  children: React.ReactNode;
+  centered?: boolean;
+}) {
+  return (
+    <SafeAreaView style={styles.page} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          contentContainerStyle={[styles.formContent, centered && styles.formCentered]}
+        >
+          {children}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 export function Heading({
@@ -144,7 +182,9 @@ export function StateMessage({
 }
 export const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: palette.background },
-  pageContent: { padding: 20, paddingBottom: 110 },
+  pageContent: { paddingHorizontal: 20 },
+  formContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 32 },
+  formCentered: { justifyContent: "center" },
   heading: { marginBottom: 20 },
   eyebrow: {
     color: palette.blue,
@@ -162,7 +202,7 @@ export const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: palette.white,
-    borderRadius: 18,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: palette.border,
     padding: 18,
@@ -170,7 +210,7 @@ export const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: palette.blue,
-    borderRadius: 12,
+    borderRadius: 14,
     minHeight: 52,
     alignItems: "center",
     justifyContent: "center",

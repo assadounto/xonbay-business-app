@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useShops } from '@/context/ShopContext';
-import { Field, Heading, palette, PrimaryButton, styles } from '@/components/ui';
+import { Field, FormScreen, Heading, PrimaryButton, styles } from '@/components/ui';
 
 export default function CreateShop() {
   const { refresh } = useShops();
@@ -31,8 +31,7 @@ export default function CreateShop() {
     } finally { setSaving(false); }
   };
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: palette.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={styles.pageContent}>
+    <FormScreen>
         <Pressable onPress={() => router.back()}><Text style={[styles.link, { marginBottom: 25 }]}>Back</Text></Pressable>
         <Heading eyebrow="NEW SHOP" title="Set up your shop" subtitle="Start with the basics. You can add products and details after creating it." />
         <Field label="Shop name" value={name} onChangeText={setName} placeholder="Your business name" />
@@ -41,7 +40,6 @@ export default function CreateShop() {
         <Field label="Region" value={region} onChangeText={setRegion} />
         <Field label="Category" value={category} onChangeText={setCategory} placeholder="What do you sell?" />
         <PrimaryButton title="Create shop" loading={saving} onPress={() => void create()} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </FormScreen>
   );
 }

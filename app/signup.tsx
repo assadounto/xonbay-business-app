@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { Field, Heading, palette, PrimaryButton, styles } from '@/components/ui';
+import { Field, FormScreen, Heading, palette, PrimaryButton } from '@/components/ui';
 
 type Step = 'email' | 'code' | 'account';
 export default function SignUp() {
@@ -37,8 +37,7 @@ export default function SignUp() {
     } finally { setLoading(false); }
   };
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: palette.background }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={[styles.pageContent, { flexGrow: 1, justifyContent: 'center' }]}>
+    <FormScreen centered>
         <Text style={{ color: palette.blue, fontSize: 12, fontWeight: '800', letterSpacing: 1, marginBottom: 14 }}>XONBAY BUSINESS · CREATE ACCOUNT</Text>
         <Heading title={step === 'email' ? 'Start with your email' : step === 'code' ? 'Verify your email' : 'Set up your account'} subtitle={step === 'code' ? 'Enter the code sent to ' + email : 'Your account can manage one or more Xonbay shops.'} />
         {step === 'email' && <Field label="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />}
@@ -52,7 +51,6 @@ export default function SignUp() {
         <Pressable style={{ alignItems: 'center', marginTop: 22 }} onPress={() => step === 'email' ? router.replace('/login') : setStep(step === 'account' ? 'code' : 'email')}>
           <Text style={{ color: palette.blue, fontWeight: '700' }}>{step === 'email' ? 'Already have an account? Sign in' : 'Back'}</Text>
         </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </FormScreen>
   );
 }
