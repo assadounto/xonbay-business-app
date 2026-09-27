@@ -39,7 +39,7 @@ export default function WorkspaceScreen() {
       <View style={styles.search}><Ionicons name="search-outline" size={18} color={palette.muted} /><TextInput value={query} onChangeText={setQuery} placeholder="Search name, handle or location" placeholderTextColor={palette.placeholder} style={styles.input} autoCorrect={false} /></View>
       {results.map((shop) => <ShopCard key={shop.id} shop={shop} active={shop.id === currentShop?.id} busy={opening === shop.id} onOpen={async () => {
         setOpening(shop.id);
-        try { await selectShop(shop); router.push('/(tabs)'); }
+        try { await selectShop(shop); router.push('/(business)/(tabs)'); }
         finally { setOpening(null); }
       }} />)}
       {!results.length && <Card><View style={styles.empty}><Ionicons name="search" color={palette.muted} size={25} /><Text style={styles.emptyTitle}>No matching shop</Text><Text style={styles.hint}>Try another shop name, category or location.</Text></View></Card>}

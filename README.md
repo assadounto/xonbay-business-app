@@ -6,6 +6,7 @@ A separate Expo/React Native merchant app for Xonbay. Android and iOS share the 
 
 - Sign in, verify an email and create an account. Access and refresh tokens live in SecureStore.
 - Choose a business workspace and create a shop through the five-step setup (handle, GPS-confirmed location, categories, optional logo, preview). New shops and logo uploads require internet access.
+- Open the business navigation by tapping the fixed header's menu button or swiping from the left edge. The drawer reveals grouped merchant routes, and the header remains visible while the dashboard scrolls.
 - View shops, the dashboard, previously opened order pages, the product catalog, and events offline after they have been fetched once for that account and shop.
 - Save product and event drafts locally. They sync as **inactive products** and **draft events**, so new listings and events are not unexpectedly public. Add media, ticket tiers, variants and publishing details online before activating them.
 - Record an in-person cash sale offline from synced active products without variants. The server recalculates the total and deducts stock when the sale syncs. A queued sale is not yet an accepted online order.

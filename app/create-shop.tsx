@@ -110,7 +110,7 @@ export default function CreateShop() {
       const refreshed = await refresh();
       const created = refreshed.find((shop) => String(shop.id) === String(id));
       if (created) await selectShop(created);
-      router.replace(created ? '/(tabs)' : '/workspace');
+      router.replace(created ? '/(business)/(tabs)' : '/workspace');
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not create your shop.'); }
     finally { setSaving(false); }
   };

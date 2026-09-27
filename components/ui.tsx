@@ -21,7 +21,7 @@ export function Page({ children, footer }: { children: React.ReactNode; footer?:
   const { online, pending, attention } = useSync();
   const insets = useSafeAreaInsets();
   const segments = useSegments();
-  const hasTabBar = segments[0] === "(tabs)";
+  const hasTabBar = segments.includes("(tabs)");
   const Container = footer ? KeyboardAvoidingView : View;
   return (
     <Container style={styles.page} behavior={footer && Platform.OS === "ios" ? "padding" : undefined}>
@@ -30,7 +30,7 @@ export function Page({ children, footer }: { children: React.ReactNode; footer?:
       contentContainerStyle={[
         styles.pageContent,
         {
-          paddingTop: insets.top + 20,
+          paddingTop: hasTabBar ? 20 : insets.top + 20,
           paddingBottom: hasTabBar ? 32 : insets.bottom + 32,
         },
       ]}

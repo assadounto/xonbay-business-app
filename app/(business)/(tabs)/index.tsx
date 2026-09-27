@@ -7,7 +7,6 @@ import { cachedRequest } from '@/lib/offline';
 import type { Dashboard } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { useShops } from '@/context/ShopContext';
-import { BusinessDashboardNavigation } from '@/components/BusinessDashboardNavigation';
 import { Card, Heading, Page, palette, PrimaryButton, SectionTitle, StateMessage, StatusPill } from '@/components/ui';
 
 export default function DashboardScreen() {
@@ -36,7 +35,6 @@ export default function DashboardScreen() {
   const series = report?.series?.sales_7d_ghs || [];
   const maxSale = Math.max(...series, 1);
   return <Page>
-    <BusinessDashboardNavigation />
     <Heading title={user?.name ? 'Good to see you, ' + user.name.split(' ')[0] : 'Your day at a glance'} subtitle="Your shop, all in one place." />
     {shopsLoading && !currentShop && <ActivityIndicator />}
     {shopsError && <StateMessage text={shopsError} onRetry={() => void refresh()} />}
@@ -68,7 +66,7 @@ export default function DashboardScreen() {
           <View style={{ flex: 1 }}><MetricCard icon="bar-chart-outline" title="This month" amount={money(report.kpis?.revenue?.month_ghs || 0, currency)} /></View>
         </View>
 
-        <SectionTitle title="Orders to handle" action="View all" onPress={() => router.push('/(tabs)/orders')} />
+        <SectionTitle title="Orders to handle" action="View all" onPress={() => router.push('/(business)/(tabs)/orders')} />
         <Card><View style={styles.orderRow}>
           <View style={{ flex: 1 }}><Text style={styles.orderCount}>{report.orders?.new || 0}</Text><Text style={styles.orderLabel}>New orders</Text></View>
           <View style={styles.divider} />
@@ -77,13 +75,13 @@ export default function DashboardScreen() {
 
         <SectionTitle title="Quick actions" caption="What would you like to do?" />
         <View style={styles.actionGrid}>
-          <ActionTile title="Record a sale" caption="Offline ready" icon="cash-outline" onPress={() => router.push('/(tabs)/sell')} />
-          <ActionTile title="Products" caption="Catalog & stock" icon="cube-outline" onPress={() => router.push('/(tabs)/products')} />
+          <ActionTile title="Record a sale" caption="Offline ready" icon="cash-outline" onPress={() => router.push('/(business)/(tabs)/sell')} />
+          <ActionTile title="Products" caption="Catalog & stock" icon="cube-outline" onPress={() => router.push('/(business)/(tabs)/products')} />
           <ActionTile title="Events" caption="Manage drafts" icon="calendar-outline" onPress={() => router.push('/events')} />
-          <ActionTile title="Orders" caption="Track activity" icon="receipt-outline" onPress={() => router.push('/(tabs)/orders')} />
+          <ActionTile title="Orders" caption="Track activity" icon="receipt-outline" onPress={() => router.push('/(business)/(tabs)/orders')} />
         </View>
 
-        <SectionTitle title="Low stock" caption="Keep your shelves ready" action="Products" onPress={() => router.push('/(tabs)/products')} />
+        <SectionTitle title="Low stock" caption="Keep your shelves ready" action="Products" onPress={() => router.push('/(business)/(tabs)/products')} />
         <Card>{report.low_stock?.length ? report.low_stock.slice(0, 5).map((item) => <View key={item.id} style={styles.stockRow}>
           <View style={styles.stockIcon}><Ionicons name="alert-circle-outline" size={18} color={palette.warning} /></View>
           <Text style={{ flex: 1, color: palette.ink, fontWeight: '700' }} numberOfLines={1}>{item.name}</Text>
