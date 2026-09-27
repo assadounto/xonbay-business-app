@@ -25,6 +25,8 @@ npm start
 
 Open in Expo Go, or use `npm run android` / `npm run ios` with a configured native toolchain. Run `npm run typecheck` before committing. `npx expo export --platform android` verifies the Android JS bundle.
 
+If Worklets reports a JavaScript/Babel plugin version mismatch after updating dependencies, stop every running Expo/Metro server and run `npm ci` followed by `npm run start:clean`. Reload the app from that server. The Expo SDK 57 versions of Reanimated and Worklets are pinned together in `package.json`; avoid loading a bundle from a previous Metro server. If a **JavaScript/native** Worklets mismatch persists in a development build, rebuild the native app with `npm run android` or `npm run ios`.
+
 The default API is `https://api.xonbay.com/v1`. Set `EXPO_PUBLIC_API_URL` to a staging API URL for testing. Expo embeds every `EXPO_PUBLIC_` value in the app; never use it for secrets.
 
 ## Appearance
