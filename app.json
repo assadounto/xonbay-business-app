@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Xonbay Business",
+    "slug": "xonbay-business-app",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "xonbay-business",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.dimarak.xonbay.business",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.dimarak.xonbay.business",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
